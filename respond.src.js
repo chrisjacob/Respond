@@ -91,7 +91,7 @@ window.respond = (function( win, doc, mqSupported ){
 		},
 		//enable/disable styles
 		applyMedia			= function( fromResize ){
-			var currWidth 	= ( !ret.forced ) ? documentWidth() : ret.px,
+			var currWidth 	= ( !ret.forced ) ? documentWidth() : ret.forcedWidth,
 				styleBlocks	= {},
 				dFrag		= doc.createDocumentFragment(),
 				lastLink	= links[ links.length-1 ],
@@ -105,7 +105,6 @@ window.respond = (function( win, doc, mqSupported ){
 			}
 			else {
 				lastCall	= now;
-				ret.px = currWidth;
 			}
 										
 			for( var i in mediastyles ){
@@ -200,8 +199,9 @@ window.respond = (function( win, doc, mqSupported ){
 
 	//expose force() for faking screen width later on.
 	ret.force	= function( px ){
-		ret.px = ( !px || typeof(px) === undefined ) ? documentWidth() : px;
 		ret.forced = ( !px || typeof(px) === undefined ) ? false : true;
+		ret.forcedWidth = ( !px || typeof(px) === undefined ) ? false : px;
+		ret.documentWidth = ( !px || typeof(px) === undefined ) ? documentWidth() : false;
 		if( !px || typeof(px) === undefined ){ 
 			// removing forced response - returning to documentWidth
 			if( ret.mediaQueriesSupported )
@@ -215,11 +215,13 @@ window.respond = (function( win, doc, mqSupported ){
 			ripCSS();
 		}
 	};
-	ret.px = documentWidth();
+	
 	ret.forced = false;
+	ret.forcedWidth = false;
+	ret.documentWidth = documentWidth();
 	
 	function callDocumentWidth(){
-		ret.px = documentWidth();
+		ret.documentWidth = documentWidth();
 	}
 	if( win.addEventListener ){
 		win.addEventListener( "resize", callDocumentWidth, false );
