@@ -4,11 +4,12 @@
  * Dual licensed under the MIT or GPL Version 2 licenses. 
  * Usage: Check out the readme file or github.com/scottjehl/respond
  * 
- * Edit: Chris Jacob (2011-03-20)- Added respond.force(), respond.forced and respond.px
+ * Edit: Chris Jacob (2011-03-20)- Added the following functions and information
  * respond.force(480) - force a "fake" width. e.g. respond to a fake 480px media query
- * respond.force(false) - restore document pixel width
+ * respond.force() || respond.force(false) - restore document pixel width
  * respond.forced - flags true | false
- * respond.px - number indicating the document pixel width, or forced pixel width. 
+ * respond.forcedWidth - number indicating the forced pixel width | false
+ * respond.documentWidth - number indicating the current pixel width of the document | false
 */
 
 window.respond = (function( win, doc, mqSupported ){

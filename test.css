@@ -9,6 +9,8 @@ body {
 	background: black;
 	color: #333;
 	font-family: Helvetica, sans-serif;
+	font-size: 16px;
+	line-height: 24px;
 }
 p {
 	width: 60%;
@@ -22,10 +24,32 @@ a {
 	color: #333;
 }
 
+a.option{
+	display: block;
+	float: left;
+	width: 46px;
+	height: 22px;
+	border: 1px solid #333;
+	background-color: #EEE;
+	text-align: center;
+	margin: 8px 16px;
+}
+
+a.reset{
+	width:94px;
+}
+
 /*styles for 480px and up!*/
 @media only screen and (min-width: 480px), only screen and (max-width: 620px) {
 	body {
 		background: green;
+	}
+	
+	a.px480 {
+		color:red;
+		border-color:red;
+		background-color:yellow;
+		text-decoration:none;
 	}
 }/*/mediaquery*/
 
@@ -34,12 +58,34 @@ a {
 	body {
 		background: red;
 	}
+	
+	a.px620 {
+		color:red;
+		border-color:red;
+		background-color:yellow;
+		text-decoration:none;
+	}
+	
+	a.px480 {
+		background-color: #EEE;
+	}
 }/*/mediaquery*/
 
 /*styles for 800px and up!*/
 @media screen and (min-width: 800px){
 	body {
 		background: blue;
+	}
+	
+	a.px800 {
+		color:red;
+		border-color:red;
+		background-color:yellow;
+		text-decoration:none;
+	}
+	
+	a.px480, a.px620  {
+		background-color: #EEE;
 	}
 }/*/mediaquery*/
 
@@ -48,11 +94,33 @@ a {
 	body {
 		background: orange;
 	}
+	
+	a.px1100 {
+		color:red;
+		border-color:red;
+		background-color:yellow;
+		text-decoration:none;
+	}
+	
+	a.px480, a.px620, a.px800  {
+		background-color: #EEE;
+	}
 }/*/mediaquery*/
 
 /*styles for 1300px and up!*/
 @media screen and (min-width: 1300px){
 	body {
 		background: navy;
+	}
+	
+	a.px1300 {
+		color:red;
+		border-color:red;
+		background-color:yellow;
+		text-decoration:none;
+	}
+	
+	a.px480, a.px620, a.px800, a.px1100  {
+		background-color: #EEE;
 	}
 }/*/mediaquery*/
