@@ -3,22 +3,35 @@
  * Copyright 2011, Scott Jehl, scottjehl.com
  * Dual licensed under the MIT or GPL Version 2 licenses. 
  * Usage: Check out the readme file or github.com/scottjehl/respond
+ * 
+ * Edit: Chris Jacob (2011-03-20)- Added respond.force(), respond.forced and respond.px
+ * respond.force(480) - force a "fake" width. e.g. respond to a fake 480px media query
+ * respond.force(false) - restore document pixel width
+ * respond.forced - flags true | false
+ * respond.px - number indicating the document pixel width, or forced pixel width. 
 */
 window.respond = (function( win, doc, mqSupported ){
 
 	var ret = {};
 	
-	//define update & force even in native-mq-supporting browsers, to avoid errors
-	ret.update	= function(){};
-	ret.force	= function(){
-		console.log('bar');
+//	ret.update	= function(){};
+	
+	//define & expose update for re-running respond later on - even in native-mq-supporting browsers
+	ret.update = ripCSS;
+	
+	//expose force function for faking screen width later on. Along with "px" width and "forced" flag
+	ret.force	= function( px ){
+		ret.px = ( !px ) ? documentWidth() : px;
+		ret.forced = ( !px ) ? false : true;
 	};
+	ret.px = documentWidth();
+	ret.forced = false;
 
 	//expose media query support flag for external use
 	ret.mediaQueriesSupported	= mqSupported;
 	
-	//if media queries are supported, exit here
-	if( mqSupported ){ return ret; }
+	//if media queries are supported, and we're not forcing an override, exit here
+	if( mqSupported && !ret.forced ){ return ret; }
 	
 	//define vars
 	var docElem 		= doc.documentElement,
@@ -78,11 +91,15 @@ window.respond = (function( win, doc, mqSupported ){
 		
 		resizeDefer,
 		
+		//get document width
+		documentWidth		= function(){
+			var name		= "clientWidth",
+			docElemProp	= docElem[ name ];
+			return doc.compatMode === "CSS1Compat" && docElemProp || doc.body[ name ] || docElemProp;
+		},
 		//enable/disable styles
 		applyMedia			= function( fromResize ){
-			var name		= "clientWidth",
-				docElemProp	= docElem[ name ],
-				currWidth 	= doc.compatMode === "CSS1Compat" && docElemProp || doc.body[ name ] || docElemProp,
+			var currWidth 	= ( !ret.forced ) ? documentWidth() : ret.px,
 				styleBlocks	= {},
 				dFrag		= doc.createDocumentFragment(),
 				lastLink	= links[ links.length-1 ],
@@ -183,14 +200,6 @@ window.respond = (function( win, doc, mqSupported ){
 	
 	//translate CSS
 	ripCSS();
-	
-	//expose update for re-running respond later on
-	ret.update = ripCSS;
-	
-	//expose force for manually setting a predfined responce later on
-	ret.force = function(){
-		console.log('foo');
-	}
 	
 	//adjust on resize
 	function callMedia(){
