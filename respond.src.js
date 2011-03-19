@@ -4,22 +4,21 @@
  * Dual licensed under the MIT or GPL Version 2 licenses. 
  * Usage: Check out the readme file or github.com/scottjehl/respond
 */
-(function( win, mqSupported ){
-	//exposed namespace
-	win.respond		= {};
+window.respond = (function( win, doc, mqSupported ){
+
+	var ret = {};
 	
 	//define update even in native-mq-supporting browsers, to avoid errors
-	respond.update	= function(){};
-	
+	ret.update	= function(){};
+
 	//expose media query support flag for external use
-	respond.mediaQueriesSupported	= mqSupported;
+	ret.mediaQueriesSupported	= mqSupported;
 	
 	//if media queries are supported, exit here
-	if( mqSupported ){ return; }
+	if( mqSupported ){ return ret; }
 	
 	//define vars
-	var doc 			= win.document,
-		docElem 		= doc.documentElement,
+	var docElem 		= doc.documentElement,
 		mediastyles		= [],
 		rules			= [],
 		appendedEls 	= [],
@@ -39,17 +38,10 @@
 				
 				//only links plz and prevent re-parsing
 				if( !!href && !parsedSheets[ href ] ){
-					if( !/^([a-zA-Z]+?:(\/\/)?(www\.)?)/.test( href ) 
-						|| href.replace( RegExp.$1, "" ).split( "/" )[0] === win.location.host ){
-						var fullhref = href;
-						ajax( href, function( styles ){
-							translate( styles, fullhref );
-							parsedSheets[ fullhref ] = true;
-						} );
-					}
-					else{
+					ajax( href, function( styles ){
+						translate( styles, href );
 						parsedSheets[ href ] = true;
-					}	
+					} );
 				}
 			}		
 		},
@@ -57,11 +49,7 @@
 		translate		= function( styles, href ){
 			var qs		= styles.match( /@media ([^\{]+)\{([\S\s]+?)(?=\}\/\*\/mediaquery\*\/)/gmi ),
 				ql		= qs && qs.length || 0,
-				//try to get CSS path
-				href	= href.substring( 0, href.lastIndexOf( "/" ));
-			
-			//if path exists, tack on trailing slash
-			if( href.length ){ href += "/"; }	
+				href	= href.substring( 0, href.lastIndexOf( "/" )) + "/";
 				
 			for( var i = 0; i < ql; i++ ){
 				var fullq	= qs[ i ].match( /@media ([^\{]+)\{([\S\s]+?)$/ ) && RegExp.$1,
@@ -109,7 +97,7 @@
 										
 			for( var i in mediastyles ){
 				var thisstyle = mediastyles[ i ];
-				if( !thisstyle.minw && !thisstyle.maxw || 
+				if( !thisstyle.minw && !thisstyle.maxq || 
 					( !thisstyle.minw || thisstyle.minw && currWidth >= thisstyle.minw ) && 
 					(!thisstyle.maxw || thisstyle.maxw && currWidth <= thisstyle.maxw ) ){						
 						if( !styleBlocks[ thisstyle.media ] ){
@@ -169,9 +157,9 @@
 		xmlHttp = (function() {
 			var xmlhttpmethod = false,
 				attempts = [
-					function(){ return new ActiveXObject("Microsoft.XMLHTTP") },
-					function(){ return new ActiveXObject("Msxml3.XMLHTTP") },
-					function(){ return new ActiveXObject("Msxml2.XMLHTTP") },
+					function(){ return new ActiveXObject("Microsoft.XMLHTTP"); },
+					function(){ return new ActiveXObject("Msxml3.XMLHTTP"); },
+					function(){ return new ActiveXObject("Msxml2.XMLHTTP"); },
 					function(){ return new XMLHttpRequest() }		
 				],
 				al = attempts.length;
@@ -194,7 +182,7 @@
 	ripCSS();
 	
 	//expose update for re-running respond later on
-	respond.update = ripCSS;
+	ret.update = ripCSS;
 	
 	//adjust on resize
 	function callMedia(){
@@ -206,9 +194,14 @@
 	else if( win.attachEvent ){
 		win.attachEvent( "onresize", callMedia );
 	}
+	
+	return ret;
+	
 })(
-	this,
-	(function( win ){
+	this,	
+	this.document,
+	
+	(function( win, doc ){
 		//cond. comm. IE check by James Padolsey
 		var ie = (function(undef){
  		    var v 	= 3,
@@ -224,8 +217,7 @@
 		//flag IE 8 and under as false - no test needed
 		if( ie && ie <= 8 ){ return false; }
 		//otherwise proceed with test
-		var doc		= win.document,
-			docElem	= doc.documentElement,
+		var docElem	= doc.documentElement,
 		    fb		= doc.createElement( "body" ),
 		    div		= doc.createElement( "div" ),
 		    se		= doc.createElement( "style" ),
@@ -246,5 +238,5 @@
 		docElem.removeChild( fb );
 		docElem.removeChild( se );
 		return support;
-	})( this )
+	})( this, this.document )
 );
