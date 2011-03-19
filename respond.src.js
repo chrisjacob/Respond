@@ -217,6 +217,16 @@ window.respond = (function( win, doc, mqSupported ){
 	ret.px = documentWidth();
 	ret.forced = false;
 	
+	function callDocumentWidth(){
+		ret.px = documentWidth();
+	}
+	if( win.addEventListener ){
+		win.addEventListener( "resize", callDocumentWidth, false );
+	}
+	else if( win.attachEvent ){
+		win.attachEvent( "onresize", callDocumentWidth );
+	}
+	
 	//if media queries are supported, and we're not forcing an override, exit here
 	if( mqSupported && !ret.forced ){ return ret; }
 	
@@ -227,16 +237,11 @@ window.respond = (function( win, doc, mqSupported ){
 	function callMedia(){
 		applyMedia( true );
 	}
-	function callDocumentWidth(){
-		ret.px = documentWidth();
-	}
 	if( win.addEventListener ){
 		win.addEventListener( "resize", callMedia, false );
-		win.addEventListener( "resize", callDocumentWidth, false );
 	}
 	else if( win.attachEvent ){
 		win.attachEvent( "onresize", callMedia );
-		win.attachEvent( "onresize", callDocumentWidth );
 	}
 	
 	return ret;
