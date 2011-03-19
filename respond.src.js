@@ -8,8 +8,11 @@ window.respond = (function( win, doc, mqSupported ){
 
 	var ret = {};
 	
-	//define update even in native-mq-supporting browsers, to avoid errors
+	//define update & force even in native-mq-supporting browsers, to avoid errors
 	ret.update	= function(){};
+	ret.force	= function(){
+		console.log('bar');
+	};
 
 	//expose media query support flag for external use
 	ret.mediaQueriesSupported	= mqSupported;
@@ -183,6 +186,11 @@ window.respond = (function( win, doc, mqSupported ){
 	
 	//expose update for re-running respond later on
 	ret.update = ripCSS;
+	
+	//expose force for manually setting a predfined responce later on
+	ret.force = function(){
+		console.log('foo');
+	}
 	
 	//adjust on resize
 	function callMedia(){
