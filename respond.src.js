@@ -55,7 +55,7 @@ window.respond = (function( win, doc, mqSupported ){
 	ret.mediaQueriesSupported	= mqSupported;
 	
 	//if media queries are supported, and we're not forcing an override, exit here
-//	if( mqSupported && !ret.forced ){ return ret; }
+	if( mqSupported && !ret.forced ){ return ret; }
 	
 	//define vars
 	var mediastyles		= [],
