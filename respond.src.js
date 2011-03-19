@@ -81,6 +81,14 @@ window.respond = (function( win, doc, mqSupported ){
 		
 		resizeDefer,
 		
+		//remove styles from DOM
+		removeStyles		= function(){
+			for( var i in appendedEls ){
+				if( appendedEls[ i ] && appendedEls[ i ].parentNode === head ){
+					head.removeChild( appendedEls[ i ] );
+				}
+			}
+		},
 		//enable/disable styles
 		applyMedia			= function( fromResize ){
 			var currWidth 	= ( !ret.forced ) ? documentWidth() : ret.px,
@@ -113,11 +121,7 @@ window.respond = (function( win, doc, mqSupported ){
 			}
 			
 			//remove any existing respond style element(s)
-			for( var i in appendedEls ){
-				if( appendedEls[ i ] && appendedEls[ i ].parentNode === head ){
-					head.removeChild( appendedEls[ i ] );
-				}
-			}
+			removeStyles();
 			
 			//inject active styles, grouped by media type
 			for( var i in styleBlocks ){
@@ -188,6 +192,9 @@ window.respond = (function( win, doc, mqSupported ){
 	 * Start program logic here
 	 */
 	
+	//expose media query support flag for external use
+	ret.mediaQueriesSupported	= mqSupported;
+	
 	//expose update() for re-running respond later on - even in native-mq-supporting browsers
 	ret.update = ripCSS;
 
@@ -195,13 +202,20 @@ window.respond = (function( win, doc, mqSupported ){
 	ret.force	= function( px ){
 		ret.px = ( !px ) ? documentWidth() : px;
 		ret.forced = ( !px ) ? false : true;
-		ripCSS();
+		if( !px ){ 
+			// removing forced response - returning to documentWidth
+			if( ret.mediaQueriesSupported )
+			{
+				removeStyles();
+			} else {
+				ripCSS();
+			}
+		} else {
+			ripCSS();
+		}
 	};
 	ret.px = documentWidth();
 	ret.forced = false;
-	
-	//expose media query support flag for external use
-	ret.mediaQueriesSupported	= mqSupported;
 	
 	//if media queries are supported, and we're not forcing an override, exit here
 	if( mqSupported && !ret.forced ){ return ret; }
