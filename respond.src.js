@@ -202,7 +202,7 @@ window.respond = (function( win, doc, mqSupported ){
 	ret.force	= function( px ){
 		ret.px = ( !px ) ? documentWidth() : px;
 		ret.forced = ( !px ) ? false : true;
-		if( !px ){ 
+		if( !px || typeof(px) === undefined ){ 
 			// removing forced response - returning to documentWidth
 			if( ret.mediaQueriesSupported )
 			{
