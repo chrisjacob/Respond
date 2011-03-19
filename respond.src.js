@@ -200,8 +200,8 @@ window.respond = (function( win, doc, mqSupported ){
 
 	//expose force() for faking screen width later on.
 	ret.force	= function( px ){
-		ret.px = ( !px ) ? documentWidth() : px;
-		ret.forced = ( !px ) ? false : true;
+		ret.px = ( !px || typeof(px) === undefined ) ? documentWidth() : px;
+		ret.forced = ( !px || typeof(px) === undefined ) ? false : true;
 		if( !px || typeof(px) === undefined ){ 
 			// removing forced response - returning to documentWidth
 			if( ret.mediaQueriesSupported )
@@ -227,11 +227,16 @@ window.respond = (function( win, doc, mqSupported ){
 	function callMedia(){
 		applyMedia( true );
 	}
+	function callDocumentWidth(){
+		ret.px = documentWidth();
+	}
 	if( win.addEventListener ){
 		win.addEventListener( "resize", callMedia, false );
+		win.addEventListener( "resize", callDocumentWidth, false );
 	}
 	else if( win.attachEvent ){
 		win.attachEvent( "onresize", callMedia );
+		win.attachEvent( "onresize", callDocumentWidth );
 	}
 	
 	return ret;
