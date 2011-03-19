@@ -15,6 +15,7 @@ window.respond = (function( win, doc, mqSupported ){
 
 	var ret = {},
 		docElem 		= doc.documentElement,
+		parsedSheets 	= {},
 		//get document width
 		documentWidth		= function(){
 			var name		= "clientWidth",
@@ -48,6 +49,7 @@ window.respond = (function( win, doc, mqSupported ){
 	ret.force	= function( px ){
 		ret.px = ( !px ) ? documentWidth() : px;
 		ret.forced = ( !px ) ? false : true;
+		ripCSS();
 	};
 	ret.px = documentWidth();
 	ret.forced = false;
@@ -61,7 +63,6 @@ window.respond = (function( win, doc, mqSupported ){
 	var mediastyles		= [],
 		rules			= [],
 		appendedEls 	= [],
-		parsedSheets 	= {},
 		resizeThrottle	= 30,
 		head 			= doc.getElementsByTagName( "head" )[0] || docElem,
 		links			= head.getElementsByTagName( "link" ),
