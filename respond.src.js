@@ -10,39 +10,18 @@
  * respond.forced - flags true | false
  * respond.px - number indicating the document pixel width, or forced pixel width. 
 */
+
 window.respond = (function( win, doc, mqSupported ){
 
-	var ret = {};
-	
-//	ret.update	= function(){};
-	
-	//define & expose update for re-running respond later on - even in native-mq-supporting browsers
-	ret.update = ripCSS;
-	
-	//expose force function for faking screen width later on. Along with "px" width and "forced" flag
-	ret.force	= function( px ){
-		ret.px = ( !px ) ? documentWidth() : px;
-		ret.forced = ( !px ) ? false : true;
-	};
-	ret.px = documentWidth();
-	ret.forced = false;
-
-	//expose media query support flag for external use
-	ret.mediaQueriesSupported	= mqSupported;
-	
-	//if media queries are supported, and we're not forcing an override, exit here
-	if( mqSupported && !ret.forced ){ return ret; }
-	
-	//define vars
-	var docElem 		= doc.documentElement,
-		mediastyles		= [],
-		rules			= [],
-		appendedEls 	= [],
-		parsedSheets 	= {},
-		resizeThrottle	= 30,
-		head 			= doc.getElementsByTagName( "head" )[0] || docElem,
-		links			= head.getElementsByTagName( "link" ),
-		
+	var ret = {},
+		docElem 		= doc.documentElement,
+		//get document width
+		documentWidth		= function(){
+			var name		= "clientWidth",
+			docElemProp	= docElem[ name ];
+			docWidth = doc.compatMode === "CSS1Compat" && docElemProp || doc.body[ name ] || docElemProp;
+			return docWidth;
+		},
 		//loop stylesheets, send text content to translate
 		ripCSS			= function(){
 			var sheets 	= doc.styleSheets,
@@ -51,7 +30,7 @@ window.respond = (function( win, doc, mqSupported ){
 			for( var i = 0; i < sl; i++ ){
 				var sheet		= sheets[ i ],
 					href		= sheet.href;
-				
+			
 				//only links plz and prevent re-parsing
 				if( !!href && !parsedSheets[ href ] ){
 					ajax( href, function( styles ){
@@ -60,7 +39,33 @@ window.respond = (function( win, doc, mqSupported ){
 					} );
 				}
 			}		
-		},
+		};
+	
+	//define & expose update for re-running respond later on - even in native-mq-supporting browsers
+	ret.update = ripCSS;
+
+	//expose force function for faking screen width later on. Along with "px" width and "forced" flag
+	ret.force	= function( px ){
+		ret.px = ( !px ) ? documentWidth() : px;
+		ret.forced = ( !px ) ? false : true;
+	};
+	ret.px = documentWidth();
+	ret.forced = false;
+	//expose media query support flag for external use
+	ret.mediaQueriesSupported	= mqSupported;
+	
+	//if media queries are supported, and we're not forcing an override, exit here
+//	if( mqSupported && !ret.forced ){ return ret; }
+	
+	//define vars
+	var mediastyles		= [],
+		rules			= [],
+		appendedEls 	= [],
+		parsedSheets 	= {},
+		resizeThrottle	= 30,
+		head 			= doc.getElementsByTagName( "head" )[0] || docElem,
+		links			= head.getElementsByTagName( "link" ),
+		
 		//find media blocks in css text, convert to style blocks
 		translate		= function( styles, href ){
 			var qs		= styles.match( /@media ([^\{]+)\{([\S\s]+?)(?=\}\/\*\/mediaquery\*\/)/gmi ),
@@ -91,12 +96,6 @@ window.respond = (function( win, doc, mqSupported ){
 		
 		resizeDefer,
 		
-		//get document width
-		documentWidth		= function(){
-			var name		= "clientWidth",
-			docElemProp	= docElem[ name ];
-			return doc.compatMode === "CSS1Compat" && docElemProp || doc.body[ name ] || docElemProp;
-		},
 		//enable/disable styles
 		applyMedia			= function( fromResize ){
 			var currWidth 	= ( !ret.forced ) ? documentWidth() : ret.px,
@@ -113,6 +112,7 @@ window.respond = (function( win, doc, mqSupported ){
 			}
 			else {
 				lastCall	= now;
+				ret.px = currWidth;
 			}
 										
 			for( var i in mediastyles ){
