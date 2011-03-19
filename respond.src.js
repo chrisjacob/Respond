@@ -207,6 +207,7 @@ window.respond = (function( win, doc, mqSupported ){
 			if( ret.mediaQueriesSupported )
 			{
 				removeStyles();
+				parsedSheets = {};
 			} else {
 				ripCSS();
 			}
